@@ -8,9 +8,9 @@ use frame_support::{
 	traits::{ConstU32, Everything, Nothing},
 	weights::Weight,
 };
+use infrablockspace_parachain::primitives::Sibling;
+use infrablockspace_runtime_common::impls::ToAuthor;
 use pallet_xcm::XcmPassthrough;
-use polkadot_parachain::primitives::Sibling;
-use polkadot_runtime_common::impls::ToAuthor;
 use xcm::latest::prelude::*;
 use xcm_builder::{
 	AccountId32Aliases, AllowExplicitUnpaidExecutionFrom, AllowTopLevelPaidExecutionFrom,
@@ -113,7 +113,7 @@ where
 	}
 }
 
-// See issue <https://github.com/paritytech/polkadot/issues/5233>
+// See issue <https://github.com/InfraBlockchain/infra-relay-chain/issues/5233>
 pub struct DenyReserveTransferToRelayChain;
 impl ShouldExecute for DenyReserveTransferToRelayChain {
 	fn should_execute<RuntimeCall>(
@@ -128,20 +128,20 @@ impl ShouldExecute for DenyReserveTransferToRelayChain {
 				InitiateReserveWithdraw {
 					reserve: MultiLocation { parents: 1, interior: Here },
 					..
-				} | DepositReserveAsset { dest: MultiLocation { parents: 1, interior: Here }, .. }
-					| TransferReserveAsset {
+				} | DepositReserveAsset { dest: MultiLocation { parents: 1, interior: Here }, .. } |
+					TransferReserveAsset {
 						dest: MultiLocation { parents: 1, interior: Here },
 						..
 					}
 			)
 		}) {
-			return Err(()); // Deny
+			return Err(()) // Deny
 		}
 
 		// An unexpected reserve transfer has arrived from the Relay Chain. Generally, `IsReserve`
 		// should not allow this, but we just log it here.
-		if matches!(origin, MultiLocation { parents: 1, interior: Here })
-			&& message.iter().any(|inst| matches!(inst, ReserveAssetDeposited { .. }))
+		if matches!(origin, MultiLocation { parents: 1, interior: Here }) &&
+			message.iter().any(|inst| matches!(inst, ReserveAssetDeposited { .. }))
 		{
 			log::warn!(
 				target: "xcm::barriers",

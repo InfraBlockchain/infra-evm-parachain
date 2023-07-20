@@ -28,15 +28,16 @@ use crate::{
 fn load_spec(id: &str) -> std::result::Result<Box<dyn ChainSpec>, String> {
 	Ok(match id {
 		"dev" => Box::new(chain_spec::development_config()),
-		"template-rococo" => Box::new(chain_spec::local_testnet_config()),
-		"" | "local" => Box::new(chain_spec::local_testnet_config()),
+		"local" => Box::new(chain_spec::local_testnet_config()),
+		"genesis" => Box::new(chain_spec::mainnet_config()),
+		"mainnet" => Box::new(chain_spec::mainnet_config()),
 		path => Box::new(chain_spec::ChainSpec::from_json_file(std::path::PathBuf::from(path))?),
 	})
 }
 
 impl SubstrateCli for Cli {
 	fn impl_name() -> String {
-		"Frontier Parachain Collator Template".into()
+		"Infrablockspace EVM Parachain".into()
 	}
 
 	fn impl_version() -> String {
@@ -45,7 +46,7 @@ impl SubstrateCli for Cli {
 
 	fn description() -> String {
 		format!(
-			"Frontier Parachain Collator Template\n\nThe command-line arguments provided first will be \
+			"Infrablockspace EVM Parachain Template\n\nThe command-line arguments provided first will be \
 		passed to the parachain node, while the arguments provided after -- will be passed \
 		to the relay chain node.\n\n\
 		{} <parachain-args> -- <relay-chain-args>",
@@ -58,11 +59,11 @@ impl SubstrateCli for Cli {
 	}
 
 	fn support_url() -> String {
-		"https://github.com/paritytech/frontier-parachain-template/issues/new".into()
+		"https://github.com/InfraBlockchain/infra-evm-parachain/issues/new".into()
 	}
 
 	fn copyright_start_year() -> i32 {
-		2020
+		2023
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
@@ -98,7 +99,7 @@ impl SubstrateCli for RelayChainCli {
 	}
 
 	fn support_url() -> String {
-		"https://github.com/paritytech/frontier-parachain-template/issues/new".into()
+		"https://github.com/InfraBlockchain/infra-frontier-parachain-template/issues/new".into()
 	}
 
 	fn copyright_start_year() -> i32 {
@@ -106,11 +107,11 @@ impl SubstrateCli for RelayChainCli {
 	}
 
 	fn load_spec(&self, id: &str) -> std::result::Result<Box<dyn sc_service::ChainSpec>, String> {
-		polkadot_cli::Cli::from_iter([RelayChainCli::executable_name()].iter()).load_spec(id)
+		infrablockspace_cli::Cli::from_iter([RelayChainCli::executable_name()].iter()).load_spec(id)
 	}
 
 	fn native_runtime_version(chain_spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		polkadot_cli::Cli::native_runtime_version(chain_spec)
+		infrablockspace_cli::Cli::native_runtime_version(chain_spec)
 	}
 }
 
@@ -179,14 +180,14 @@ pub fn run() -> Result<()> {
 				// };
 				// cmd.run(frontier_database_config)?;
 
-				let polkadot_cli = RelayChainCli::new(
+				let infrablockspace_cli = RelayChainCli::new(
 					&config,
 					[RelayChainCli::executable_name()].iter().chain(cli.relay_chain_args.iter()),
 				);
 
 				let polkadot_config = SubstrateCli::create_configuration(
-					&polkadot_cli,
-					&polkadot_cli,
+					&infrablockspace_cli,
+					&infrablockspace_cli,
 					config.tokio_handle.clone(),
 				)
 				.map_err(|err| format!("Relay chain argument error: {}", err))?;
@@ -213,28 +214,26 @@ pub fn run() -> Result<()> {
 			let runner = cli.create_runner(cmd)?;
 			// Switch on the concrete benchmark sub-command-
 			match cmd {
-				BenchmarkCmd::Pallet(cmd) => {
+				BenchmarkCmd::Pallet(cmd) =>
 					if cfg!(feature = "runtime-benchmarks") {
 						runner.sync_run(|config| cmd.run::<Block, ParachainNativeExecutor>(config))
 					} else {
 						Err("Benchmarking wasn't enabled when building the node. \
 					You can enable it with `--features runtime-benchmarks`."
 							.into())
-					}
-				},
+					},
 				BenchmarkCmd::Block(cmd) => runner.sync_run(|config| {
 					let partials = new_partial(&config, &eth_cfg)?;
 					cmd.run(partials.client)
 				}),
 				#[cfg(not(feature = "runtime-benchmarks"))]
-				BenchmarkCmd::Storage(_) => {
+				BenchmarkCmd::Storage(_) =>
 					return Err(sc_cli::Error::Input(
 						"Compile with --features=runtime-benchmarks \
 						to enable storage benchmarks."
 							.into(),
 					)
-					.into())
-				},
+					.into()),
 				#[cfg(feature = "runtime-benchmarks")]
 				BenchmarkCmd::Storage(cmd) => runner.sync_run(|config| {
 					let partials = new_partial(&config, &eth_cfg)?;
@@ -242,9 +241,8 @@ pub fn run() -> Result<()> {
 					let storage = partials.backend.expose_storage();
 					cmd.run(config, partials.client.clone(), db, storage)
 				}),
-				BenchmarkCmd::Machine(cmd) => {
-					runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone()))
-				},
+				BenchmarkCmd::Machine(cmd) =>
+					runner.sync_run(|config| cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())),
 				// NOTE: this allows the Client to leniently implement
 				// new benchmark commands without requiring a companion MR.
 				#[allow(unreachable_patterns)]
@@ -315,7 +313,7 @@ pub fn run() -> Result<()> {
 					.map(|e| e.para_id)
 					.ok_or_else(|| "Could not find parachain ID in chain-spec.")?;
 
-				let polkadot_cli = RelayChainCli::new(
+				let infrablockspace_cli = RelayChainCli::new(
 					&config,
 					[RelayChainCli::executable_name()].iter().chain(cli.relay_chain_args.iter()),
 				);
@@ -323,7 +321,7 @@ pub fn run() -> Result<()> {
 				let id = ParaId::from(para_id);
 
 				let parachain_account =
-					AccountIdConversion::<polkadot_primitives::v2::AccountId>::into_account_truncating(&id);
+					AccountIdConversion::<infrablockspace_primitives::v2::AccountId>::into_account_truncating(&id);
 
 				let state_version = Cli::native_runtime_version(&config.chain_spec).state_version();
 				let block: Block = generate_genesis_block(&*config.chain_spec, state_version)
@@ -332,7 +330,7 @@ pub fn run() -> Result<()> {
 
 				let tokio_handle = config.tokio_handle.clone();
 				let polkadot_config =
-					SubstrateCli::create_configuration(&polkadot_cli, &polkadot_cli, tokio_handle)
+					SubstrateCli::create_configuration(&infrablockspace_cli, &infrablockspace_cli, tokio_handle)
 						.map_err(|err| format!("Relay chain argument error: {}", err))?;
 
 				info!("Parachain id: {:?}", id);

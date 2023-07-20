@@ -1,34 +1,23 @@
-[settings]
-timeout = 1000
-
 [relaychain]
-chain = "rococo-local"
-default_command = "../bin/polkadot"
+default_command = "../infra-relay-chain/target/release/infrablockspace"
+chain = "infrablockspace-local"
 
   [[relaychain.nodes]]
   name = "alice"
   validator = true
-  ws_port = 9900
-  extra_args = [ "-lparachain=debug" ]
 
   [[relaychain.nodes]]
   name = "bob"
   validator = true
-  extra_args = [ "-lparachain=debug" ]
 
 [[parachains]]
-id = 1000
-add_to_genesis = true
-cumulus_based = true
+id = 1338
 chain = "local"
+cumulus_based = true
 
-  [[parachains.collators]]
-  name = "frontier-parachain-collator01"
-  command = "./target/release/frontier-parachain-node"
-  ws_port = 9910
-  args = [""]
-
-[types.Header]
-number = "u64"
-parent_hash = "Hash"
-post_state = "Hash"
+	# run alice as parachain collator
+	[[parachains.collators]]
+	name = "alice"
+	validator = true
+	command = "./target/release/frontier-parachain-node"
+	args = ["-lparachain=debug", "--alice"]

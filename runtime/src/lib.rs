@@ -62,7 +62,7 @@ pub use sp_runtime::BuildStorage;
 pub use parachains_common::impls::{AccountIdOf, DealWithFees};
 
 // Polkadot imports
-use polkadot_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
+use infrablockspace_runtime_common::{BlockHashCount, SlowAdjustingFeeUpdate};
 
 use fee::WeightToFee;
 use weights::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight};
@@ -73,6 +73,7 @@ use xcm_executor::XcmExecutor;
 
 // Frontier
 use fp_rpc::TransactionStatus;
+use infrablockspace_runtime_parachains::system_token_aggregator;
 use pallet_ethereum::{Call::transact, PostLogContent, Transaction as EthereumTransaction};
 use pallet_evm::{
 	Account as EVMAccount, EVMCurrencyAdapter, EnsureAddressTruncated, FeeCalculator,
@@ -520,6 +521,7 @@ impl pallet_assets::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Balance = Balance;
 	type AssetId = u32;
+	type AssetLink = AssetLink;
 	type AssetIdParameter = codec::Compact<u32>;
 	type Currency = Balances;
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
@@ -572,25 +574,6 @@ impl pallet_sudo::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 }
 
-parameter_types! {
-	pub const CouncilMotionDuration: BlockNumber = 7 * DAYS;
-	pub const CouncilMaxProposals: u32 = 10;
-	pub const CouncilMaxMembers: u32 = 25;
-}
-
-type CouncilCollective = pallet_collective::Instance1;
-impl pallet_collective::Config<CouncilCollective> for Runtime {
-	type RuntimeOrigin = RuntimeOrigin;
-	type RuntimeEvent = RuntimeEvent;
-	type Proposal = RuntimeCall;
-	type SetMembersOrigin = EnsureRoot<AccountId>;
-	type MotionDuration = CouncilMotionDuration;
-	type MaxProposals = CouncilMaxProposals;
-	type MaxMembers = CouncilMaxMembers;
-	type DefaultVote = pallet_collective::PrimeDefaultVote;
-	type WeightInfo = pallet_collective::weights::SubstrateWeight<Runtime>;
-}
-
 impl pallet_utility::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type RuntimeCall = RuntimeCall;
@@ -599,15 +582,17 @@ impl pallet_utility::Config for Runtime {
 	type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
 
-impl pallet_motion::Config for Runtime {
+impl pallet_asset_link::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type RuntimeCall = RuntimeCall;
-	type SimpleMajorityOrigin =
-		pallet_collective::EnsureProportionMoreThan<AccountId, CouncilCollective, 1, 2>;
-	type SuperMajorityOrigin =
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 2, 3>;
-	type UnanimousOrigin =
-		pallet_collective::EnsureProportionAtLeast<AccountId, CouncilCollective, 1, 1>;
+	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
+	type Assets = Assets;
+	type WeightInfo = ();
+}
+
+impl system_token_aggregator::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Assets = Assets;
+	type AssetMultiLocationGetter = AssetLink;
 }
 
 // Frontier
@@ -622,7 +607,7 @@ impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
 	{
 		if let Some(author_index) = F::find_author(digests) {
 			let authority_id = Aura::authorities()[author_index as usize].clone();
-			return Some(H160::from_slice(&authority_id.to_raw_vec()[4..24]));
+			return Some(H160::from_slice(&authority_id.to_raw_vec()[4..24]))
 		}
 		None
 	}
@@ -634,8 +619,8 @@ pub struct EVMDealWithFees<R>(PhantomData<R>);
 impl<R> OnUnbalanced<NegativeImbalance<R>> for EVMDealWithFees<R>
 where
 	R: pallet_balances::Config + pallet_collator_selection::Config + core::fmt::Debug,
-	AccountIdOf<R>:
-		From<polkadot_primitives::v2::AccountId> + Into<polkadot_primitives::v2::AccountId>,
+	AccountIdOf<R>: From<infrablockspace_primitives::v2::AccountId>
+		+ Into<infrablockspace_primitives::v2::AccountId>,
 	<R as frame_system::Config>::RuntimeEvent: From<pallet_balances::Event<R>>,
 {
 	fn on_nonzero_unbalanced(amount: NegativeImbalance<R>) {
@@ -789,12 +774,11 @@ construct_runtime!(
 		Assets: pallet_assets = 9,
 		Balances: pallet_balances = 10,
 		TransactionPayment: pallet_transaction_payment = 11,
+		AssetLink: pallet_asset_link = 12,
+		SystemTokenAggregator: system_token_aggregator = 13,
 
 		// Governance and Utility
 		Sudo: pallet_sudo = 15,
-		Council: pallet_collective::<Instance1> = 16,
-		Motion: pallet_motion = 17,
-
 
 		// Collator support. The order of these 4 are important and shall not change.
 		Authorship: pallet_authorship = 20,
@@ -883,9 +867,8 @@ impl fp_self_contained::SelfContainedCall for RuntimeCall {
 		len: usize,
 	) -> Option<Result<(), TransactionValidityError>> {
 		match self {
-			RuntimeCall::Ethereum(call) => {
-				call.pre_dispatch_self_contained(info, dispatch_info, len)
-			},
+			RuntimeCall::Ethereum(call) =>
+				call.pre_dispatch_self_contained(info, dispatch_info, len),
 			_ => None,
 		}
 	}
@@ -895,11 +878,10 @@ impl fp_self_contained::SelfContainedCall for RuntimeCall {
 		info: Self::SignedInfo,
 	) -> Option<sp_runtime::DispatchResultWithInfo<PostDispatchInfoOf<Self>>> {
 		match self {
-			call @ RuntimeCall::Ethereum(pallet_ethereum::Call::transact { .. }) => {
+			call @ RuntimeCall::Ethereum(pallet_ethereum::Call::transact { .. }) =>
 				Some(call.dispatch(RuntimeOrigin::from(
 					pallet_ethereum::RawOrigin::EthereumTransaction(info),
-				)))
-			},
+				))),
 			_ => None,
 		}
 	}
