@@ -14,8 +14,8 @@ switch (command) {
   case "--erc20-slot":
     console.log(require('./erc20-slot')());
     break;
-  case "--evm-address":
-    console.log(require('./evm-address')());
+  case "--ss58-address":
+    console.log(require('./ss58-address')());
     break;
   case "--help":
     console.log(help);
