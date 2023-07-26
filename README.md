@@ -1,10 +1,8 @@
-# Frontier Parachain Template 
+# Infra EVM Parachain
 
-The **Frontier Parachain Template** is a ready-to-use EVM-based parachain (based on the [Frontier project](https://github.com/InfraBlockchain/infra-frontier)), pre-configured with the [Assets](https://paritytech.github.io/substrate/master/pallet_assets/index.html) pallet, a simple Governance system ([Collective](https://paritytech.github.io/substrate/master/pallet_collective/index.html) & [Motion](https://github.com/paritytech/extended-parachain-template/tree/main/pallets/motion) pallets), and EVM precompiles.
+The **Infra EVM Parachain** is a ready-to-use EVM-based parachain (based on the [Frontier project](https://github.com/InfraBlockchain/infra-frontier)), pre-configured with the [Assets](https://paritytech.github.io/substrate/master/pallet_assets/index.html) pallet and EVM precompiles.
 
 This is an ideal starting point for any Parachain project that needs to support legacy Solidity smart contracts, but that wants at the same time to benefit from the flexibility provided by Substrate, and the shared security of the Polkadot relay chain.
-
-This template is maintained by the **Delivery Services** team at **Parity**.
 
 ## 🚀 Getting Started
 
@@ -14,10 +12,10 @@ Make sure you have Rust installed along with everything that's needed to compile
 
 ### 🔧 Build
 
-1. Clone the frontier parachain template repository:
+1. Clone the infra evm parachain repository:
 
 ```sh
-git clone https://github.com/InfraBlockchain/infra-frontier-parachain-template
+git clone https://github.com/InfraBlockchain/infra-evm-parachain
 ```
 
 2. Use `cargo` to build the parachain node without launching it:
@@ -27,8 +25,7 @@ cargo build --release
 ```
 
 ### 🕸️ Run a local network
- You will need a compatible release of [Polkadot](https://github.com/InfraBlockchain/infra-relay-chain) to run a local network. You may also want to use [Zombienet](https://github.com/paritytech/zombienet/releases) (available for Linux and MacOS),  for spinning up a full fledged relay chain - parachain environment. You can find more information about running a local test network [HERE](./docs/zombienet.md)
-
+ You will need a compatible release of [InfraBlockspace](https://github.com/InfraBlockchain/infra-relay-chain) to run a local network. You may also want to use [Zombienet](https://github.com/paritytech/zombienet/releases) (available for Linux and MacOS),  for spinning up a full fledged relay chain - parachain environment. You can find more information about running a local test network [HERE](./docs/zombienet.md)
 
 
 👉 Learn more about parachains [here](https://wiki.polkadot.network/docs/learn-parachains), and parathreads [here](https://wiki.polkadot.network/docs/learn-parathreads).
