@@ -76,7 +76,7 @@ use fp_rpc::TransactionStatus;
 use infrablockspace_runtime_parachains::system_token_aggregator;
 use pallet_ethereum::{Call::transact, PostLogContent, Transaction as EthereumTransaction};
 use pallet_evm::{
-	Account as EVMAccount, EVMCurrencyAdapter, EnsureAddressTruncated, FeeCalculator,
+	Account as EVMAccount, EVMAssetsAdapter, EnsureAddressTruncated, FeeCalculator,
 	HashedAddressMapping, OnChargeEVMTransaction, Runner,
 };
 
@@ -613,65 +613,6 @@ impl<F: FindAuthor<u32>> FindAuthor<H160> for FindAuthorTruncated<F> {
 	}
 }
 
-/// Handles transaction fees from the EVM, depositing priority fee in a staking pot
-pub struct EVMDealWithFees<R>(PhantomData<R>);
-
-impl<R> OnUnbalanced<NegativeImbalance<R>> for EVMDealWithFees<R>
-where
-	R: pallet_balances::Config + pallet_collator_selection::Config + core::fmt::Debug,
-	AccountIdOf<R>: From<infrablockspace_primitives::v2::AccountId>
-		+ Into<infrablockspace_primitives::v2::AccountId>,
-	<R as frame_system::Config>::RuntimeEvent: From<pallet_balances::Event<R>>,
-{
-	fn on_nonzero_unbalanced(amount: NegativeImbalance<R>) {
-		// deposit the fee into the collator_selection reward pot
-		let staking_pot = <pallet_collator_selection::Pallet<R>>::account_id();
-		<pallet_balances::Pallet<R>>::resolve_creating(&staking_pot, amount);
-	}
-}
-
-pub struct EVMTransactionChargeHandler<OU>(PhantomData<OU>);
-
-type BalanceOf<R> = <<R as pallet_evm::Config>::Currency as Currency<AccountIdOf<R>>>::Balance;
-type PositiveImbalanceOf<R> =
-	<<R as pallet_evm::Config>::Currency as Currency<AccountIdOf<R>>>::PositiveImbalance;
-type NegativeImbalanceOf<R> =
-	<<R as pallet_evm::Config>::Currency as Currency<AccountIdOf<R>>>::NegativeImbalance;
-
-impl<R, OU> OnChargeEVMTransaction<R> for EVMTransactionChargeHandler<OU>
-where
-	R: pallet_evm::Config,
-	PositiveImbalanceOf<R>: Imbalance<BalanceOf<R>, Opposite = NegativeImbalanceOf<R>>,
-	NegativeImbalanceOf<R>: Imbalance<BalanceOf<R>, Opposite = PositiveImbalanceOf<R>>,
-	OU: OnUnbalanced<NegativeImbalanceOf<R>>,
-	U256: UniqueSaturatedInto<BalanceOf<R>>,
-{
-	type LiquidityInfo = Option<NegativeImbalanceOf<R>>;
-
-	fn withdraw_fee(
-		who: &H160,
-		fee: sp_core::U256,
-	) -> Result<Self::LiquidityInfo, pallet_evm::Error<R>> {
-		EVMCurrencyAdapter::<<R as pallet_evm::Config>::Currency, ()>::withdraw_fee(who, fee)
-	}
-
-	fn correct_and_deposit_fee(
-		who: &H160,
-		corrected_fee: sp_core::U256,
-		base_fee: sp_core::U256,
-		already_withdrawn: Self::LiquidityInfo,
-	) -> Self::LiquidityInfo {
-		<EVMCurrencyAdapter::<<R as pallet_evm::Config>::Currency, OU>
-            as OnChargeEVMTransaction<R>>::correct_and_deposit_fee(who, corrected_fee, base_fee, already_withdrawn)
-	}
-
-	fn pay_priority_fee(tip: Self::LiquidityInfo) {
-		if let Some(tip) = tip {
-			OU::on_unbalanced(tip);
-		}
-	}
-}
-
 parameter_types! {
 	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT.ref_time() / WEIGHT_PER_GAS);
 	pub PrecompilesValue: FrontierPrecompiles<Runtime> = FrontierPrecompiles::<_>::new();
@@ -687,13 +628,14 @@ impl pallet_evm::Config for Runtime {
 	type WithdrawOrigin = EnsureAddressTruncated;
 	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
 	type Currency = Balances;
+	type Assets = Assets;
 	type RuntimeEvent = RuntimeEvent;
 	type PrecompilesType = FrontierPrecompiles<Self>;
 	type PrecompilesValue = PrecompilesValue;
 	type ChainId = EVMChainId;
 	type BlockGasLimit = BlockGasLimit;
 	type Runner = pallet_evm::runner::stack::Runner<Self>;
-	type OnChargeTransaction = EVMTransactionChargeHandler<EVMDealWithFees<Runtime>>;
+	type OnChargeTransaction = ();
 	type OnCreate = ();
 	type Timestamp = Timestamp;
 	type WeightInfo = pallet_evm::weights::SubstrateWeight<Runtime>;

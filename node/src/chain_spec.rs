@@ -246,6 +246,7 @@ fn testnet_genesis(
 		// EVM compatibility
 		evm_chain_id: frontier_parachain_runtime::EVMChainIdConfig { chain_id: 1000 },
 		evm: frontier_parachain_runtime::EVMConfig {
+			asset_id: 1,
 			accounts: {
 				let mut map = BTreeMap::new();
 				map.insert(
@@ -436,6 +437,7 @@ fn mainnet_genesis(
 		// EVM compatibility
 		evm_chain_id: frontier_parachain_runtime::EVMChainIdConfig { chain_id: 1000 },
 		evm: frontier_parachain_runtime::EVMConfig {
+			asset_id: 1,
 			accounts: {
 				let mut map = BTreeMap::new();
 				map.insert(
