@@ -1,5 +1,5 @@
 [package]
-name = "frontier-parachain-node"
+name = "infra-evm"
 version = "0.9.400"
 authors = ["Anonymous"]
 description = "A new Cumulus FRAME-based Substrate Node, ready for hacking together a parachain."

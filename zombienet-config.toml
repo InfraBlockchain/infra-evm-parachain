@@ -19,5 +19,5 @@ cumulus_based = true
 	[[parachains.collators]]
 	name = "alice"
 	validator = true
-	command = "./target/release/frontier-parachain-node"
+	command = "./target/release/infra-evm"
 	args = ["-lparachain=debug", "--alice"]
