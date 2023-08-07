@@ -22,8 +22,8 @@ use sp_core::{
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
-		AccountIdLookup, BlakeTwo256, Block as BlockT, DispatchInfoOf, Dispatchable, Get,
-		IdentifyAccount, PostDispatchInfoOf, UniqueSaturatedInto, Verify,
+		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, DispatchInfoOf, Dispatchable,
+		Get, IdentifyAccount, PostDispatchInfoOf, UniqueSaturatedInto, Verify,
 	},
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
 	ApplyExtrinsicResult, ConsensusEngineId, MultiSignature,
@@ -38,10 +38,7 @@ use frame_support::{
 	construct_runtime,
 	dispatch::DispatchClass,
 	parameter_types,
-	traits::{
-		AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8, Currency, Everything, FindAuthor,
-		Imbalance, OnUnbalanced,
-	},
+	traits::{AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8, Everything, FindAuthor},
 	weights::{constants::WEIGHT_REF_TIME_PER_SECOND, ConstantMultiplier, Weight},
 	PalletId,
 };
@@ -49,7 +46,7 @@ use frame_system::{
 	limits::{BlockLength, BlockWeights},
 	EnsureRoot, EnsureSigned,
 };
-use pallet_balances::NegativeImbalance;
+
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
 use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin};
@@ -76,12 +73,13 @@ use fp_rpc::TransactionStatus;
 use infrablockspace_runtime_parachains::system_token_aggregator;
 use pallet_ethereum::{Call::transact, PostLogContent, Transaction as EthereumTransaction};
 use pallet_evm::{
-	Account as EVMAccount, EVMAssetsAdapter, EnsureAddressTruncated, FeeCalculator,
-	HashedAddressMapping, OnChargeEVMTransaction, Runner,
+	Account as EVMAccount, EnsureAddressTruncated, FeeCalculator, HashedAddressMapping, Runner,
 };
 
 mod precompiles;
 use precompiles::FrontierPrecompiles;
+
+use pallet_system_token_payment::{CreditToBucket, TransactionFeeCharger};
 
 /// Import the template pallet.
 pub use pallet_template;
@@ -129,7 +127,7 @@ pub type SignedExtra = (
 	frame_system::CheckEra<Runtime>,
 	frame_system::CheckNonce<Runtime>,
 	frame_system::CheckWeight<Runtime>,
-	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
+	pallet_system_token_payment::ChargeSystemToken<Runtime>,
 );
 
 /// Unchecked extrinsic type as expected by this runtime.
@@ -445,6 +443,24 @@ impl pallet_transaction_payment::Config for Runtime {
 }
 
 parameter_types! {
+	pub const FeeTreasuryId: PalletId = PalletId(*b"infrapid");
+}
+
+impl pallet_system_token_payment::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Assets = Assets;
+	/// The actual transaction charging logic that charges the fees.
+	type OnChargeSystemToken = TransactionFeeCharger<
+		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
+		CreditToBucket<Runtime>,
+	>;
+	type FeeTableProvider = SystemToken;
+	/// The type that handles the voting info.
+	type VotingHandler = ParachainSystem;
+	type PalletId = FeeTreasuryId;
+}
+
+parameter_types! {
 	pub const ReservedXcmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 	pub const ReservedDmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 }
@@ -589,9 +605,13 @@ impl pallet_asset_link::Config for Runtime {
 	type WeightInfo = ();
 }
 
+parameter_types! {
+	pub const BlockPeriod: BlockNumber = 10;
+}
+
 impl system_token_aggregator::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type Assets = Assets;
+	type Period = BlockPeriod;
 	type AssetMultiLocationGetter = AssetLink;
 }
 
@@ -691,9 +711,9 @@ impl pallet_hotfix_sufficients::Config for Runtime {
 	type WeightInfo = pallet_hotfix_sufficients::weights::SubstrateWeight<Runtime>;
 }
 
-/// Configure the pallet template in pallets/template.
-impl pallet_template::Config for Runtime {
+impl pallet_system_token::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type AuthorizedOrigin = EnsureRoot<AccountId>;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -716,11 +736,13 @@ construct_runtime!(
 		Assets: pallet_assets = 9,
 		Balances: pallet_balances = 10,
 		TransactionPayment: pallet_transaction_payment = 11,
-		AssetLink: pallet_asset_link = 12,
-		SystemTokenAggregator: system_token_aggregator = 13,
+		InfraAssetTxPayment: pallet_system_token_payment::{Pallet, Event<T>} = 12,
+		AssetLink: pallet_asset_link = 13,
+		SystemTokenAggregator: system_token_aggregator = 14,
+		SystemToken: pallet_system_token = 15,
 
 		// Governance and Utility
-		Sudo: pallet_sudo = 15,
+		Sudo: pallet_sudo = 19,
 
 		// Collator support. The order of these 4 are important and shall not change.
 		Authorship: pallet_authorship = 20,
@@ -742,9 +764,6 @@ construct_runtime!(
 		DynamicFee: pallet_dynamic_fee = 43,
 		BaseFee: pallet_base_fee = 44,
 		HotfixSufficients: pallet_hotfix_sufficients = 45,
-
-		// Template
-		TemplatePallet: pallet_template = 50,
 	}
 );
 
