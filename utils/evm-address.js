@@ -1,10 +1,4 @@
 const help = `--evm-address <address>: Calculate the EVM address that corresponds to a native Substrate address.`;
-const crypto = require('@polkadot/util-crypto');
-
-const convertToEvmAddress = (substrateAddress) => {
-  const addressBytes = crypto.decodeAddress(substrateAddress);
-  return '0x' + Buffer.from(addressBytes.subarray(0, 20)).toString('hex');
-}
 
 module.exports = () => {
   if (process.argv.length < 4) {
@@ -20,5 +14,6 @@ module.exports = () => {
     process.exit(9);
   }
   
-  return convertToEvmAddress(address);
+  const crypto = require('@polkadot/util-crypto');
+  return `0x${crypto.blake2AsHex(crypto.decodeAddress(address), 256).substring(26)}`;
 };

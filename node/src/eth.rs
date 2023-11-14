@@ -7,50 +7,37 @@ use std::{
 
 use futures::{future, prelude::*};
 // Substrate
-use sc_client_api::{BlockchainEvents, StateBackendFor};
+use sc_client_api::BlockchainEvents;
 use sc_executor::{NativeElseWasmExecutor, NativeExecutionDispatch};
 
 use sc_network_sync::SyncingService;
 use sc_service::{
-	error::Error as ServiceError, BasePath, Configuration, TFullBackend, TFullClient, TaskManager,
+	error::Error as ServiceError, Configuration, TFullBackend, TFullClient, TaskManager,
 };
 use sp_api::ConstructRuntimeApi;
-use sp_runtime::traits::BlakeTwo256;
 // Frontier
 pub use fc_consensus::FrontierBlockImport;
 use fc_mapping_sync::{kv::MappingSyncWorker, SyncStrategy};
 use fc_rpc::{EthTask, OverrideHandle};
 pub use fc_rpc_core::types::{FeeHistoryCache, FeeHistoryCacheLimit, FilterPool};
 // Local
-use frontier_parachain_runtime::opaque::Block;
+use infra_evm_runtime::opaque::Block;
 
 /// Frontier DB backend type.
 pub type FrontierBackend = fc_db::Backend<Block>;
 
 pub fn db_config_dir(config: &Configuration) -> PathBuf {
-	let application = &config.impl_name;
-	config
-		.base_path
-		.as_ref()
-		.map(|base_path| base_path.config_dir(config.chain_spec.id()))
-		.unwrap_or_else(|| {
-			BasePath::from_project("", "", application).config_dir(config.chain_spec.id())
-		})
+	config.base_path.config_dir(config.chain_spec.id())
 }
 
 /// Avalailable frontier backend types.
-#[derive(Debug, Copy, Clone, clap::ValueEnum)]
+#[derive(Debug, Copy, Clone, Default, clap::ValueEnum)]
 pub enum BackendType {
 	/// Either RocksDb or ParityDb as per inherited from the global backend settings.
+	#[default]
 	KeyValue,
 	/// Sql database with custom log indexing.
 	Sql,
-}
-
-impl Default for BackendType {
-	fn default() -> BackendType {
-		BackendType::KeyValue
-	}
 }
 
 /// The ethereum-compatibility configuration used to run a node.
@@ -127,17 +114,13 @@ pub trait EthCompatRuntimeApiCollection:
 	sp_api::ApiExt<Block>
 	+ fp_rpc::EthereumRuntimeRPCApi<Block>
 	+ fp_rpc::ConvertTransactionRuntimeApi<Block>
-where
-	<Self as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
 {
 }
 
-impl<Api> EthCompatRuntimeApiCollection for Api
-where
+impl<Api> EthCompatRuntimeApiCollection for Api where
 	Api: sp_api::ApiExt<Block>
 		+ fp_rpc::EthereumRuntimeRPCApi<Block>
-		+ fp_rpc::ConvertTransactionRuntimeApi<Block>,
-	<Self as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
+		+ fp_rpc::ConvertTransactionRuntimeApi<Block>
 {
 }
 
@@ -162,8 +145,7 @@ pub async fn spawn_frontier_tasks<RuntimeApi, Executor>(
 		TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<Executor>>,
 	>,
 	RuntimeApi: Send + Sync + 'static,
-	RuntimeApi::RuntimeApi:
-		EthCompatRuntimeApiCollection<StateBackend = StateBackendFor<TFullBackend<Block>, Block>>,
+	RuntimeApi::RuntimeApi: EthCompatRuntimeApiCollection,
 	Executor: NativeExecutionDispatch + 'static,
 {
 	// Spawn main mapping sync worker background task.
