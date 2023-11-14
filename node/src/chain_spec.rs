@@ -104,7 +104,7 @@ pub fn development_config() -> ChainSpec {
 				],
 				// Give Alice root privileges
 				Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
-				1000.into(),
+				1200.into(),
 			)
 		},
 		Vec::new(),
@@ -161,7 +161,7 @@ pub fn local_testnet_config() -> ChainSpec {
 				],
 				// Give Alice root privileges
 				Some(get_account_id_from_seed::<sr25519::Public>("Alice")),
-				1000.into(),
+				1200.into(),
 			)
 		},
 		// Bootnodes
@@ -256,7 +256,7 @@ fn testnet_genesis(
 		sudo: infra_evm_runtime::SudoConfig { key: root_key },
 		transaction_payment: Default::default(),
 		// EVM compatibility
-		evm_chain_id: infra_evm_runtime::EVMChainIdConfig { chain_id: 1000, ..Default::default() },
+		evm_chain_id: infra_evm_runtime::EVMChainIdConfig { chain_id: 1200, ..Default::default() },
 		evm: infra_evm_runtime::EVMConfig {
 			asset_id: 99,
 			accounts: {
