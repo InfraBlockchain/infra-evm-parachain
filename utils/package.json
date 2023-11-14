@@ -1,6 +1,10 @@
 {
   "name": "substrate-evm-utils",
   "version": "0.0.0",
+  "scripts": {
+    "ss58": "node . --ss58-address",
+    "evm": "node . --evm-address"
+  },
   "dependencies": {
     "@polkadot/util-crypto": "^2.2.1",
     "keccak": "^3.0.0",

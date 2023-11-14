@@ -24,7 +24,7 @@ node ./utils --erc20-slot 0 0xd43593c715fdd31c61141abd04a99fd6822c8558
 0x045c0350b9cf0df39c4b40400c965118df2dca5ce0fbcf0de4aafc099aea4a14
 ```
 
-### `--evm-address <address>`
+### `--evm-address <ss58-address>`
 
 Calculate the **hashed** EVM address that corresponds to a native Substrate address.
 
@@ -49,6 +49,17 @@ Secret Key URI `//Alice` is account:
 ```
 
 Thus your truncated public address is: `0xd43593c715fdd31c61141abd04a99fd6822c8558`.
+
+### `--ss58-address <evm-address>`
+
+Calculate the native Substrate address that corresponds to a **hashed** EVM address.
+
+```bash
+$ node ./utils --ss58-address 0xC0F0f4ab324C46e55D02D0033343B4Be8A55532d
+$ 5ExzeuwZZkSGBpgjafesaGnsFkBdftHjoV9kKfYkEXW7PxCK
+```
+
+Thus your truncated public address is: `5ExzeuwZZkSGBpgjafesaGnsFkBdftHjoV9kKfYkEXW7PxCK`.
 
 ### `---help`
 
