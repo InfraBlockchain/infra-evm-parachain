@@ -62,7 +62,7 @@ substrate-prometheus-endpoint = {git = "https://github.com/InfraBlockchain/infra
 try-runtime-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", optional = true, branch = "master"}
 
 # Polkadot
-polkadot-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", features = ["rococo-native"], branch = "master"}
+polkadot-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", features = ["infra-relay-native", "rococo-native"], branch = "master"}
 primitives = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
 infrablockspace-service = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
 xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master"}

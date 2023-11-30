@@ -14,7 +14,6 @@ RUN useradd -m -u 1000 -U -s /bin/sh -d /infra-evm infra-evm-node && \
     mkdir -p /data /infra-evm/.local/share && \
     chown -R infra-evm-node:infra-evm-node /data && \
     ln -s /data /infra-evm/.local/share/infra-evm-node && \
-    rm -rf /usr/bin /usr/sbin && \
     /usr/local/bin/infra-evm-node --version
 
 USER infra-evm-node

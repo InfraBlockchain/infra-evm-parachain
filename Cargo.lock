@@ -5068,6 +5068,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "infra-asset-common"
+version = "0.1.0"
+source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
+dependencies = [
+ "cumulus-primitives-utility",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-assets",
+ "parity-scale-codec",
+ "primitives",
+ "scale-info",
+ "sp-api",
+ "sp-runtime",
+ "sp-std",
+ "staging-xcm",
+ "staging-xcm-builder",
+ "staging-xcm-executor",
+ "substrate-wasm-builder",
+ "xcm-primitives",
+]
+
+[[package]]
 name = "infra-asset-link"
 version = "0.1.0"
 source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
@@ -5246,6 +5269,94 @@ dependencies = [
 ]
 
 [[package]]
+name = "infra-relay-runtime"
+version = "1.0.0"
+source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
+dependencies = [
+ "bitvec",
+ "cumulus-primitives-utility",
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-benchmarking",
+ "frame-system-rpc-runtime-api",
+ "frame-try-runtime",
+ "infra-asset-common",
+ "infra-asset-link",
+ "infra-relay-runtime-constants",
+ "log",
+ "pallet-asset-rate",
+ "pallet-assets",
+ "pallet-authority-discovery",
+ "pallet-authorship",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-bounties",
+ "pallet-child-bounties",
+ "pallet-collective",
+ "pallet-democracy",
+ "pallet-elections-phragmen",
+ "pallet-grandpa",
+ "pallet-identity",
+ "pallet-im-online",
+ "pallet-indices",
+ "pallet-membership",
+ "pallet-message-queue",
+ "pallet-multisig",
+ "pallet-offences",
+ "pallet-offences-benchmarking",
+ "pallet-preimage",
+ "pallet-proxy",
+ "pallet-scheduler",
+ "pallet-session",
+ "pallet-session-benchmarking",
+ "pallet-sudo",
+ "pallet-system-token",
+ "pallet-system-token-tx-payment",
+ "pallet-timestamp",
+ "pallet-tips",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-treasury",
+ "pallet-utility",
+ "pallet-validator-election",
+ "pallet-vesting",
+ "pallet-xcm",
+ "parachain-primitives",
+ "parity-scale-codec",
+ "primitives",
+ "runtime-common",
+ "runtime-parachains",
+ "rustc-hex",
+ "scale-info",
+ "serde",
+ "serde_derive",
+ "smallvec",
+ "sp-api",
+ "sp-arithmetic",
+ "sp-authority-discovery",
+ "sp-block-builder",
+ "sp-consensus-babe",
+ "sp-consensus-beefy",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-mmr-primitives",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "staging-xcm",
+ "staging-xcm-builder",
+ "staging-xcm-executor",
+ "static_assertions",
+ "substrate-wasm-builder",
+ "xcm-primitives",
+]
+
+[[package]]
 name = "infra-relay-runtime-constants"
 version = "1.0.0"
 source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
@@ -5329,6 +5440,8 @@ dependencies = [
  "futures",
  "gossip-support",
  "hex-literal",
+ "infra-relay-runtime",
+ "infra-relay-runtime-constants",
  "infrablockspace-core-primitives",
  "infrablockspace-overseer",
  "is_executable",
@@ -8538,6 +8651,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-offences-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
+dependencies = [
+ "frame-benchmarking",
+ "frame-election-provider-support",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-babe",
+ "pallet-balances",
+ "pallet-grandpa",
+ "pallet-im-online",
+ "pallet-offences",
+ "pallet-session",
+ "pallet-staking",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-staking",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-preimage"
 version = "4.0.0-dev"
 source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
@@ -8659,6 +8796,23 @@ dependencies = [
  "sp-state-machine",
  "sp-std",
  "sp-trie",
+]
+
+[[package]]
+name = "pallet-session-benchmarking"
+version = "4.0.0-dev"
+source = "git+https://github.com/InfraBlockchain/infrablockspace-sdk?branch=master#2e28ab448c5e5e27198ba80b726701479cc982fd"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-session",
+ "pallet-staking",
+ "parity-scale-codec",
+ "rand 0.8.5",
+ "sp-runtime",
+ "sp-session",
+ "sp-std",
 ]
 
 [[package]]
