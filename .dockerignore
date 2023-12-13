@@ -4,6 +4,7 @@
 **/*.md
 /docker/
 !/target/release/polkadot-collator
+!/target/release/infra-evm-node
 
 # dotfiles in the repo root
 /.*
