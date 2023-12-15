@@ -23,61 +23,61 @@ serde = {version = "1.0.186", features = ["derive"]}
 infra-evm-runtime = {path = "../runtime"}
 
 # Substrate
-frame-benchmarking = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-frame-benchmarking-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-pallet-transaction-payment-rpc = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-basic-authorship = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-chain-spec = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-client-api = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-consensus = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-executor = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-network = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-network-common = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-network-sync = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-offchain = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-rpc = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-service = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", features = ["default"]}
-sc-sysinfo = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-telemetry = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-tracing = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-transaction-pool = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sc-transaction-pool-api = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-api = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-block-builder = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-blockchain = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-core = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-io = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-inherents = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-keystore = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-offchain = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-runtime = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-session = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-timestamp = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-sp-transaction-pool = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-substrate-frame-rpc-system = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-substrate-prometheus-endpoint = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-try-runtime-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", optional = true, branch = "master"}
+frame-benchmarking = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+frame-benchmarking-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+pallet-transaction-payment-rpc = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-basic-authorship = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-chain-spec = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-client-api = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-consensus = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-executor = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-network = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-network-common = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-network-sync = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-offchain = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-rpc = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-service = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", features = ["default"]}
+sc-sysinfo = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-telemetry = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-tracing = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-transaction-pool = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sc-transaction-pool-api = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-api = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-block-builder = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-blockchain = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-core = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-io = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-inherents = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-keystore = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-offchain = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-runtime = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-session = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-timestamp = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+sp-transaction-pool = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+substrate-frame-rpc-system = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+substrate-prometheus-endpoint = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+try-runtime-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", optional = true, branch = "master"}
 
 # Polkadot
-polkadot-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", features = ["infra-relay-native", "rococo-native"], branch = "master"}
-primitives = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-infrablockspace-service = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master"}
+polkadot-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", features = ["infra-relay-native", "rococo-native"], branch = "master"}
+primitives = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+infrablockspace-service = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master"}
 
 # Cumulus
-cumulus-client-cli = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-collator = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-consensus-proposer = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-consensus-common = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-network = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-client-service = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-primitives-core = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-primitives-parachain-inherent = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
-cumulus-relay-chain-interface = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
+cumulus-client-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-collator = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-consensus-aura = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-consensus-proposer = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-consensus-common = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-network = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-client-service = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-primitives-core = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-primitives-parachain-inherent = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+cumulus-relay-chain-interface = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
 
 # Frontier
 fc-api = {git = "https://github.com/InfraBlockchain/infra-frontier", branch = "master"}
@@ -93,7 +93,7 @@ fp-evm = {git = "https://github.com/InfraBlockchain/infra-frontier", branch = "m
 fp-rpc = {git = "https://github.com/InfraBlockchain/infra-frontier", branch = "master"}
 
 [build-dependencies]
-substrate-build-script-utils = {git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master"}
+substrate-build-script-utils = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
 
 [features]
 default = []

@@ -12,7 +12,7 @@ edition = "2021"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [build-dependencies]
-substrate-wasm-builder = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", optional = true, branch = "master" }
+substrate-wasm-builder = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", optional = true, branch = "master" }
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = [
@@ -29,70 +29,70 @@ pallet-template = { path = "../pallets/template", default-features = false }
 pallet-motion = { path = "../pallets/motion", default-features = false }
 
 # Substrate
-frame-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, optional = true, branch = "master" }
-frame-executive = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-frame-support = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-frame-system = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-frame-system-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, optional = true, branch = "master" }
-frame-system-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-frame-try-runtime = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, optional = true, branch = "master" }
-pallet-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-asset-link = { package = "infra-asset-link", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-assets = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-aura = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-authorship = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-balances = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-collective = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-session = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-sudo = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-timestamp = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-utility = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-multisig = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-system-token = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-pallet-system-token-tx-payment = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-api = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-block-builder = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-consensus-aura = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-core = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-inherents = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-offchain = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-runtime = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-session = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-std = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-transaction-pool = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-sp-version = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
+frame-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, optional = true, branch = "master" }
+frame-executive = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+frame-support = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+frame-system = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+frame-system-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, optional = true, branch = "master" }
+frame-system-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+frame-try-runtime = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, optional = true, branch = "master" }
+pallet-asset-tx-payment = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-asset-link = { package = "infra-asset-link", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-assets = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-aura = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-authorship = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-balances = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-collective = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-session = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-sudo = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-timestamp = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-utility = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-multisig = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-system-token = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+pallet-system-token-tx-payment = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-api = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-block-builder = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-consensus-aura = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-core = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-inherents = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-offchain = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-runtime = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-session = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-std = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-transaction-pool = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+sp-version = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
 
 # Infra Relay
-infrablockspace-core-primitives = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-parachain-primitives = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-runtime-common = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-infra-relay-runtime-constants = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-runtime-parachains = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-primitives = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
+infrablockspace-core-primitives = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+parachain-primitives = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+runtime-common = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+infra-relay-runtime-constants = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+runtime-parachains = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+primitives = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
 
-pallet-xcm = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
-xcm-primitives = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", default-features = false, branch = "master" }
+pallet-xcm = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+xcm-builder = { package = "staging-xcm-builder", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
+xcm-primitives = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master" }
 
 # Cumulus
-assets-common = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-pallet-aura-ext = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-pallet-dmp-queue = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-pallet-parachain-system = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false, features = [
+assets-common = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-pallet-aura-ext = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-pallet-dmp-queue = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-pallet-parachain-system = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false, features = [
 	"parameterized-consensus-hook",
 ] }
-cumulus-pallet-session-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false, version = "3.0.0" }
-cumulus-pallet-xcm = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-pallet-xcmp-queue = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-primitives-core = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-cumulus-primitives-utility = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-pallet-collator-selection = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-parachain-info = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
-parachains-common = { git = "https://github.com/InfraBlockchain/infrablockspace-sdk", branch = "master", default-features = false }
+cumulus-pallet-session-benchmarking = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false, version = "3.0.0" }
+cumulus-pallet-xcm = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-pallet-xcmp-queue = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-primitives-core = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+cumulus-primitives-utility = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+pallet-collator-selection = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+parachain-info = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
+parachains-common = { git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master", default-features = false }
 
 
 # Frontier
