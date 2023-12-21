@@ -35,3 +35,5 @@ polkadot.*
 
 # NixOS development environment
 .envrc
+
+.json

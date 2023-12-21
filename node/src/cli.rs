@@ -97,7 +97,7 @@ pub struct Cli {
 #[derive(Debug)]
 pub struct RelayChainCli {
 	/// The actual relay chain cli object.
-	pub base: polkadot_cli::RunCmd,
+	pub base: infrablockchain_cli::RunCmd,
 
 	/// Optional chain id that should be passed to the relay chain.
 	pub chain_id: Option<String>,
@@ -114,7 +114,7 @@ impl RelayChainCli {
 	) -> Self {
 		let extension = crate::chain_spec::Extensions::try_get(&*para_config.chain_spec);
 		let chain_id = extension.map(|e| e.relay_chain.clone());
-		let base_path = Some(para_config.base_path.path().join("infrablockspace"));
+		let base_path = Some(para_config.base_path.path().join("infrablockchain"));
 		Self { base_path, chain_id, base: clap::Parser::parse_from(relay_chain_args) }
 	}
 }

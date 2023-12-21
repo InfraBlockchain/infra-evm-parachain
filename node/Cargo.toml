@@ -62,9 +62,9 @@ substrate-prometheus-endpoint = {git = "https://github.com/InfraBlockchain/infra
 try-runtime-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", optional = true, branch = "master"}
 
 # Polkadot
-polkadot-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", features = ["infra-relay-native", "rococo-native"], branch = "master"}
+infrablockchain-cli = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", features = ["infra-relay-native", "rococo-native"], branch = "master"}
 primitives = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
-infrablockspace-service = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
+infrablockchain-service = {git = "https://github.com/InfraBlockchain/infrablockchain-sdk", branch = "master"}
 xcm = { package = "staging-xcm", git = "https://github.com/InfraBlockchain/infrablockchain-sdk", default-features = false, branch = "master"}
 
 # Cumulus
@@ -101,7 +101,7 @@ txpool = []
 runtime-benchmarks = [
   "try-runtime-cli/try-runtime",
   "infra-evm-runtime/runtime-benchmarks",
-  "polkadot-cli/runtime-benchmarks",
+  "infrablockchain-cli/runtime-benchmarks",
 ]
 try-runtime = [
   "try-runtime-cli/try-runtime",

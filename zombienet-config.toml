@@ -2,7 +2,7 @@
 timeout = 1000
 
 [relaychain]
-default_command = "../infrablockspace-sdk/target/release/infrablockspace"
+default_command = "../infrablockchain-sdk/target/release/infrablockchain"
 default_args = ["-lparachain=debug", "-l=xcm=trace"]
 chain = "infra-relay-local"
 
