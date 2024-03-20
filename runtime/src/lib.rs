@@ -10,11 +10,13 @@ mod constants;
 mod weights;
 pub use constants::*;
 pub mod xcm_config;
+use xcm_config::XcmRouter;
 
 use codec::{Decode, Encode};
 
 use cumulus_pallet_parachain_system::RelayNumberStrictlyIncreases;
 use cumulus_primitives_core::relay_chain::MAX_POV_SIZE;
+use parachains_common::constants::SLOT_DURATION;
 use sp_api::impl_runtime_apis;
 use sp_core::{
 	crypto::{ByteArray, KeyTypeId},
@@ -24,7 +26,8 @@ use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{
 		AccountIdLookup, BlakeTwo256, Block as BlockT, ConvertInto, DispatchInfoOf, Dispatchable,
-		Get, IdentifyAccount, PostDispatchInfoOf, UniqueSaturatedInto, Verify,
+		Get, IdentifyAccount, PostDispatchInfoOf, TryConvertInto as JustTry, UniqueSaturatedInto,
+		Verify,
 	},
 	transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
 	ApplyExtrinsicResult, ConsensusEngineId, MultiSignature,
@@ -39,8 +42,7 @@ use frame_support::{
 	dispatch::DispatchClass,
 	parameter_types,
 	traits::{
-		AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8, EitherOfDiverse, Everything,
-		FindAuthor, OnFinalize,
+		AsEnsureOriginWithArg, ConstU32, ConstU64, ConstU8, Everything, FindAuthor, OnFinalize,
 	},
 	weights::{constants::WEIGHT_REF_TIME_PER_SECOND, ConstantMultiplier, Weight},
 	PalletId,
@@ -50,10 +52,9 @@ use frame_system::{
 	EnsureRoot, EnsureSigned,
 };
 use pallet_system_token_tx_payment::{CreditToBucket, TransactionFeeCharger};
-use pallet_xcm::{EnsureXcm, IsMajorityOfBody};
 pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
-use xcm_config::{DotLocation, XcmConfig, XcmOriginToTransactDispatchOrigin};
+use xcm_config::{XcmConfig, XcmOriginToTransactDispatchOrigin};
 
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
@@ -83,9 +84,6 @@ use pallet_evm::{
 
 mod precompiles;
 use precompiles::FrontierPrecompiles;
-
-/// Import the template pallet.
-pub use pallet_template;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
 pub type Signature = MultiSignature;
@@ -437,8 +435,11 @@ impl frame_support::traits::Contains<RuntimeCall> for BootstrapCallFilter {
 			RuntimeCall::Assets(
 				pallet_assets::Call::create { .. }
 				| pallet_assets::Call::set_metadata { .. }
-				| pallet_assets::Call::mint { .. }
-				| pallet_assets::Call::set_runtime_state { .. },
+				| pallet_assets::Call::mint { .. },
+			)
+			| RuntimeCall::InfraXcm(pallet_xcm::Call::limited_teleport_assets { .. })
+			| RuntimeCall::InfraParaCore(
+				cumulus_pallet_infra_parachain_core::Call::request_register_system_token { .. },
 			) => true,
 			_ => false,
 		}
@@ -453,13 +454,14 @@ impl frame_support::traits::Contains<RuntimeCall> for BootstrapCallFilter {
 
 impl pallet_system_token_tx_payment::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
+	type InfraTxInterface = InfraParaCore;
 	type Assets = Assets;
 	type OnChargeSystemToken = TransactionFeeCharger<
+		Runtime,
 		pallet_assets::BalanceToAssetBalance<Balances, Runtime, ConvertInto>,
 		CreditToBucket<Runtime>,
+		JustTry,
 	>;
-	type FeeTableProvider = SystemToken;
-	type VotingHandler = ParachainSystem;
 	type BootstrapCallFilter = BootstrapCallFilter;
 	type PalletId = FeeTreasuryId;
 }
@@ -469,22 +471,38 @@ parameter_types! {
 	pub const ReservedDmpWeight: Weight = MAXIMUM_BLOCK_WEIGHT.saturating_div(4);
 }
 
+type ConsensusHook = cumulus_pallet_aura_ext::FixedVelocityConsensusHook<
+	Runtime,
+	RELAY_CHAIN_SLOT_DURATION_MILLIS,
+	BLOCK_PROCESSING_VELOCITY,
+	UNINCLUDED_SEGMENT_CAPACITY,
+>;
+
 impl cumulus_pallet_parachain_system::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type OnSystemEvent = ();
 	type SelfParaId = parachain_info::Pallet<Runtime>;
-	type OutboundXcmpMessageSource = XcmpQueue;
 	type DmpMessageHandler = DmpQueue;
 	type ReservedDmpWeight = ReservedDmpWeight;
+	type OutboundXcmpMessageSource = XcmpQueue;
 	type XcmpMessageHandler = XcmpQueue;
 	type ReservedXcmpWeight = ReservedXcmpWeight;
+	type UpdateRCConfig = InfraParaCore;
 	type CheckAssociatedRelayNumber = RelayNumberStrictlyIncreases;
-	type ConsensusHook = cumulus_pallet_aura_ext::FixedVelocityConsensusHook<
-		Runtime,
-		RELAY_CHAIN_SLOT_DURATION_MILLIS,
-		BLOCK_PROCESSING_VELOCITY,
-		UNINCLUDED_SEGMENT_CAPACITY,
-	>;
+	type ConsensusHook = ConsensusHook;
+}
+
+parameter_types! {
+	pub const ActiveRequestPeriod: BlockNumber = 100;
+}
+
+impl cumulus_pallet_infra_parachain_core::Config for Runtime {
+	type RuntimeOrigin = RuntimeOrigin;
+	type RuntimeEvent = RuntimeEvent;
+	type LocalAssetManager = Assets;
+	type AssetLink = AssetLink;
+	type ParachainSystem = ParachainSystem;
+	type ActiveRequestPeriod = ActiveRequestPeriod;
 }
 
 impl parachain_info::Config for Runtime {}
@@ -492,17 +510,14 @@ impl parachain_info::Config for Runtime {}
 impl cumulus_pallet_aura_ext::Config for Runtime {}
 
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
-	type WeightInfo = ();
 	type RuntimeEvent = RuntimeEvent;
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type ChannelInfo = ParachainSystem;
-	type VersionWrapper = IbsXcm;
+	type VersionWrapper = ();
 	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
-	type ControllerOrigin = EitherOfDiverse<
-		EnsureRoot<AccountId>,
-		EnsureXcm<IsMajorityOfBody<DotLocation, ExecutiveBody>>,
-	>;
+	type ControllerOrigin = EnsureRoot<AccountId>;
 	type ControllerOriginConverter = XcmOriginToTransactDispatchOrigin;
+	type WeightInfo = ();
 	type PriceForSiblingDelivery = ();
 }
 
@@ -569,7 +584,6 @@ impl pallet_assets::Config for Runtime {
 	type Balance = Balance;
 	type RemoveItemsLimit = ConstU32<1000>;
 	type AssetId = u32;
-	type AssetLink = AssetLink;
 	type AssetIdParameter = codec::Compact<u32>;
 	type Currency = Balances;
 	type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
@@ -579,7 +593,6 @@ impl pallet_assets::Config for Runtime {
 	type MetadataDepositBase = MetadataDepositBase;
 	type MetadataDepositPerByte = MetadataDepositPerByte;
 	type ApprovalDeposit = ApprovalDeposit;
-	type StringLimit = StringLimit;
 	type Freezer = ();
 	type Extra = ();
 	type CallbackHandle = ();
@@ -599,24 +612,23 @@ parameter_types! {
 	pub const StakingAdminBodyId: BodyId = BodyId::Defense;
 }
 
-/// We allow root and the StakingAdmin to execute privileged collator selection operations.
-pub type CollatorSelectionUpdateOrigin =
-	EitherOfDiverse<EnsureRoot<AccountId>, EnsureXcm<IsMajorityOfBody<DotLocation, ExecutiveBody>>>;
+// We allow root only to execute privileged collator selection operations.
+pub type CollatorSelectionUpdateOrigin = EnsureRoot<AccountId>;
 
 impl pallet_collator_selection::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Currency = Balances;
 	type UpdateOrigin = CollatorSelectionUpdateOrigin;
 	type PotId = PotId;
-	type MaxCandidates = MaxCandidates;
-	type MinEligibleCollators = MinEligibleCollators;
-	type MaxInvulnerables = MaxInvulnerables;
+	type MaxCandidates = ConstU32<100>;
+	type MinEligibleCollators = ConstU32<4>;
+	type MaxInvulnerables = ConstU32<20>;
 	// should be a multiple of session or things will get inconsistent
 	type KickThreshold = Period;
 	type ValidatorId = <Self as frame_system::Config>::AccountId;
 	type ValidatorIdOf = pallet_collator_selection::IdentityCollator;
 	type ValidatorRegistration = Session;
-	type WeightInfo = ();
+	type WeightInfo = weights::pallet_collator_selection::WeightInfo<Runtime>;
 }
 
 impl pallet_sudo::Config for Runtime {
@@ -668,7 +680,6 @@ impl pallet_motion::Config for Runtime {
 
 impl pallet_asset_link::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type ReserveAssetModifierOrigin = EnsureRoot<AccountId>;
 	type Assets = Assets;
 	type WeightInfo = ();
 }
@@ -686,13 +697,10 @@ parameter_types! {
 impl system_token_aggregator::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
 	type Period = AggregatedPeriod;
+	type LocalAssetManager = Assets;
 	type AssetMultiLocationGetter = AssetLink;
+	type SendXcm = XcmRouter;
 	type IsRelay = IsRelay;
-}
-
-impl pallet_system_token::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-	type AuthorizedOrigin = EnsureRoot<AccountId>;
 }
 
 // Frontier
@@ -798,48 +806,44 @@ impl pallet_hotfix_sufficients::Config for Runtime {
 	type WeightInfo = pallet_hotfix_sufficients::weights::SubstrateWeight<Runtime>;
 }
 
-/// Configure the pallet template in pallets/template.
-impl pallet_template::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
-}
-
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub struct Runtime {
 		// System support stuff.
-		System: frame_system = 0,
-		ParachainSystem: cumulus_pallet_parachain_system = 1,
-		Timestamp: pallet_timestamp = 2,
-		ParachainInfo: parachain_info = 3,
+		System: frame_system::{Pallet, Call, Config<T>, Storage, Event<T>} = 0,
+		ParachainSystem: cumulus_pallet_parachain_system::{
+			Pallet, Call, Config<T>, Storage, Inherent, Event<T>, ValidateUnsigned,
+		} = 1,
+		InfraParaCore: cumulus_pallet_infra_parachain_core::{Pallet, Call, Storage, Event<T>} = 2,
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent} = 3,
+		ParachainInfo: parachain_info::{Pallet, Storage, Config<T>} = 4,
 
 		// Utility
-		Utility: pallet_utility = 4,
-		Multisig: pallet_multisig = 5,
+		Utility: pallet_utility = 5,
+		Multisig: pallet_multisig = 6,
 
 		// Monetary stuff.
-		Assets: pallet_assets = 9,
-		Balances: pallet_balances = 10,
-		TransactionPayment: pallet_transaction_payment = 11,
-		SystemTokenTxPayment: pallet_system_token_tx_payment = 12,
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>} = 10,
+		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>} = 11,
+		SystemTokenTxPayment: pallet_system_token_tx_payment::{Pallet, Event<T>} = 12,
 
 		// Governance
-		Sudo: pallet_sudo = 15,
+		Sudo: pallet_sudo::{Pallet, Call, Storage, Config<T>, Event<T>} = 15,
 		Council: pallet_collective::<Instance1> = 16,
 		Motion: pallet_motion = 17,
 
-
-		// Collator support. The order of these 4 are important and shall not change.
-		Authorship: pallet_authorship = 20,
-		CollatorSelection: pallet_collator_selection = 21,
-		Session: pallet_session = 22,
-		Aura: pallet_aura = 23,
-		AuraExt: cumulus_pallet_aura_ext = 24,
+		// Collator support. the order of these 5 are important and shall not change.
+		Authorship: pallet_authorship::{Pallet, Storage} = 20,
+		CollatorSelection: pallet_collator_selection::{Pallet, Call, Storage, Event<T>, Config<T>} = 21,
+		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>} = 22,
+		Aura: pallet_aura::{Pallet, Storage, Config<T>} = 23,
+		AuraExt: cumulus_pallet_aura_ext::{Pallet, Storage, Config<T>} = 24,
 
 		// XCM helpers.
-		XcmpQueue: cumulus_pallet_xcmp_queue = 30,
-		IbsXcm: pallet_xcm = 31,
-		CumulusXcm: cumulus_pallet_xcm = 32,
-		DmpQueue: cumulus_pallet_dmp_queue = 33,
+		XcmpQueue: cumulus_pallet_xcmp_queue::{Pallet, Call, Storage, Event<T>} = 30,
+		InfraXcm: pallet_xcm::{Pallet, Call, Storage, Event<T>, Origin, Config<T>} = 31,
+		CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
+		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
 
 		// Frontier
 		Ethereum: pallet_ethereum = 40,
@@ -849,11 +853,10 @@ construct_runtime!(
 		BaseFee: pallet_base_fee = 44,
 		HotfixSufficients: pallet_hotfix_sufficients = 45,
 
-		// Template
-		TemplatePallet: pallet_template = 50,
-		AssetLink: pallet_asset_link = 51,
-		SystemTokenAggregator: system_token_aggregator = 52,
-		SystemToken: pallet_system_token = 53,
+		// The main stage.
+		Assets: pallet_assets::{Pallet, Call, Storage, Event<T>, Config<T>} = 50,
+		AssetLink: pallet_asset_link::{Pallet, Storage, Event<T>} = 52,
+		SystemTokenAggregator: system_token_aggregator = 53,
 	}
 );
 
@@ -1104,9 +1107,9 @@ impl_runtime_apis! {
 				None
 			};
 
-			let is_transactional = false;
-			let validate = true;
-			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
+			let _is_transactional = false;
+			let _validate = true;
+			let _evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
 
 			let mut estimated_transaction_len = data.len() +
 				20 + // to
@@ -1152,11 +1155,11 @@ impl_runtime_apis! {
 				max_priority_fee_per_gas,
 				nonce,
 				access_list.unwrap_or_default(),
-				is_transactional,
-				validate,
+				false,
+				true,
 				weight_limit,
 				proof_size_base_cost,
-				evm_config,
+				config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
 			).map_err(|err| err.error.into())
 		}
 
@@ -1179,9 +1182,9 @@ impl_runtime_apis! {
 				None
 			};
 
-			let is_transactional = false;
-			let validate = true;
-			let evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
+			let _is_transactional = false;
+			let _validate = true;
+			let _evm_config = config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config());
 
 			let mut estimated_transaction_len = data.len() +
 				20 + // from
@@ -1220,21 +1223,21 @@ impl_runtime_apis! {
 					_ => (None, None),
 				};
 
-			<Runtime as pallet_evm::Config>::Runner::create(
-				from,
-				data,
-				value,
-				gas_limit.unique_saturated_into(),
-				max_fee_per_gas,
-				max_priority_fee_per_gas,
-				nonce,
-				access_list.unwrap_or_default(),
-				is_transactional,
-				validate,
-				weight_limit,
-				proof_size_base_cost,
-				evm_config,
-			).map_err(|err| err.error.into())
+				<Runtime as pallet_evm::Config>::Runner::create(
+					from,
+					data,
+					value,
+					gas_limit.unique_saturated_into(),
+					max_fee_per_gas,
+					max_priority_fee_per_gas,
+					nonce,
+					access_list.unwrap_or_default(),
+					false,
+					true,
+					weight_limit,
+					proof_size_base_cost,
+					config.as_ref().unwrap_or(<Runtime as pallet_evm::Config>::config()),
+				).map_err(|err| err.error.into())
 		}
 
 		fn current_transaction_statuses() -> Option<Vec<TransactionStatus>> {

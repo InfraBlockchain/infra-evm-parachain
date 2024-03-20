@@ -107,3 +107,6 @@ try-runtime = [
   "try-runtime-cli/try-runtime",
   "infra-evm-runtime/try-runtime",
 ]
+fast-runtime = [
+	"infra-evm-runtime/fast-runtime",
+]

@@ -50,7 +50,6 @@ pallet-transaction-payment = { git = "https://github.com/InfraBlockchain/infrabl
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 pallet-utility = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 pallet-multisig = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
-pallet-system-token = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 pallet-system-token-tx-payment = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 sp-api = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 sp-block-builder = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
@@ -79,6 +78,7 @@ xcm-executor = { package = "staging-xcm-executor", git = "https://github.com/Inf
 xcm-primitives = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", default-features = false, branch = "master" }
 
 # Cumulus
+cumulus-pallet-infra-parachain-core = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", branch = "master", default-features = false }
 assets-common = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", branch = "master", default-features = false }
 cumulus-pallet-aura-ext = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", branch = "master", default-features = false }
 cumulus-pallet-dmp-queue = { git = "https://github.com/InfraBlockchain/infrablockchain-substrate", branch = "master", default-features = false }
@@ -121,6 +121,7 @@ std = [
 	"scale-info/std",
 	"assets-common/std",
 	# Cumulus
+	"cumulus-pallet-infra-parachain-core/std",
 	"cumulus-pallet-aura-ext/std",
 	"cumulus-pallet-dmp-queue/std",
 	"cumulus-pallet-parachain-system/std",
@@ -246,3 +247,4 @@ try-runtime = [
 	"pallet-dynamic-fee/try-runtime",
 	"pallet-hotfix-sufficients/try-runtime",
 ]
+fast-runtime = []

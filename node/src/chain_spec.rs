@@ -249,12 +249,11 @@ fn testnet_genesis(
 		aura: Default::default(),
 		aura_ext: Default::default(),
 		parachain_system: Default::default(),
-		ibs_xcm: infra_evm_runtime::IbsXcmConfig {
+		infra_xcm: infra_evm_runtime::InfraXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 			..Default::default()
 		},
 		sudo: infra_evm_runtime::SudoConfig { key: root_key },
-		transaction_payment: Default::default(),
 		// EVM compatibility
 		evm_chain_id: infra_evm_runtime::EVMChainIdConfig { chain_id: 1200, ..Default::default() },
 		evm: infra_evm_runtime::EVMConfig {
