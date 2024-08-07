@@ -26,3 +26,11 @@ cargo build --release
 
 ### 🕸️ Run a local network
  You will need a compatible release of [infrablockchain-substrate](https://github.com/InfraBlockchain/infrablockchain-substrate) to run a local network. You may also want to use [Zombienet](https://github.com/paritytech/zombienet/releases) (available for Linux and MacOS),  for spinning up a full fledged relay chain - parachain environment. You can find more information about running a local test network [HERE](./docs/zombienet.md)
+
+
+### Build check
+
+2024.08.08 기준 `1f0a5d1ab32e19f5bf3366f7a56bc0648c8de083` commit 빌드 확인 (당시 기준 master 브랜치)
+
+```bash
+```
